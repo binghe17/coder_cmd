@@ -1,4 +1,6 @@
-﻿
+﻿/* 
+ * [ 2018-06-20 ]      #Server Terminal        @zun.
+ */
 const http = require('http');
 const express = require('express');
 const SocketIO=require('socket.io');

@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>cmd demo</title>
+	<script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript" src="lib/socket.io.js"></script>
+
+	<style type="text/css">
+		*{padding: 0; margin: 0;}
+		#wrapper{width:910px; margin:0 auto;}
+		#cmdBox{width:500px; float:left;}
+		#logBox {width:400px;height:370px; border: 1px solid #ccc; float:left;overflow: auto;margin-top: 38px;}
+		#logBox p {background: #eee; margin: 2px;font-size: 14px;font-family: Verdana, Arial, Helvetica, sans-serif;}
+		#logBox span {background: #393; color:#fff;}
+		#cmdInput {width: 81%; height: 20px;}
+		button {width: 9%; height:24px;}
+		#result {background: #eee; height: 350px; overflow-y: scroll;}
+
+	</style>
+
+</head>
+<body>
+	<div id="wrapper">
+		<div id="cmdBox">
+			<h1>Server Terminal</h1>
+			<pre id="result"></pre>
+			<input id="cmdInput" value="ping 172.30.1.7" autofocus /><button id="sendBtn">执行</button><button id="stopBtn">stop</button><br>
+		</div>
+		<div id="logBox"></div>
+	</div>
+	
+
+
+	<script type="text/javascript">
+
+		$(function(){
+
+			var s=io();
+			s.on('connect',function(){
+				$('#result').append('>>> 客户端请求连接： connecting..\n')
+			});
+			s.on('error',function(){
+				$('#result').append('>>> 客户端请求失败： error.\n')
+			});
+			s.on('disconnect',function(){
+				$('#result').append('>>> 客户端断开链接： disconnect.\n')
+			});
+			s.on('message',function(m){
+				var dom=$('#result')
+				dom.append(m);
+				dom.scrollTop( dom[0].scrollHeight );//滚轮置底
+			})
+
+
+			//-------------------------
+			function runBtn(){ 
+				var time = js_yyyy_mm_dd_hh_mm_ss();
+				var cmd= $('#cmdInput').val();
+				$('#logBox').append('<p><span>['+ time +']</span> <b>'+ cmd+'</b></p>')
+				s.send($('#cmdInput').val()); 
+			}
+
+			$('#sendBtn').click(runBtn);
+			enterRun('#cmdInput', runBtn)
+
+			$('#stopBtn').click(function(){
+				s.send('[!!stop]');
+			})
+
+
+			//-------------------------
+			function enterRun(dom,callback){
+				$(dom).keydown(function(e){ 
+					var curKey = e.which; 
+					if(curKey == 13){
+						callback();
+						return false;
+					}
+				});
+			}
+			//-------------------------
+
+			function js_yyyy_mm_dd_hh_mm_ss () {
+				now = new Date();
+				year = "" + now.getFullYear();
+				month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+				day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+				hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+				minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+				second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
+				return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+			}
+
+
+		});
+	</script>
+
+</body>
+</html>

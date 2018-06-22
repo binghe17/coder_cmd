@@ -67,7 +67,7 @@ function execFun2(cmd,callback,callback2,callback3){
 
 		function binary2utf8(msg){
 			var iconv = require('iconv-lite');
-			var encoding = 'utf8';//cp936
+			var encoding = 'cp936';//cp936
 			var binaryEncoding = 'binary';
 			return  iconv.decode( Buffer.from(msg, binaryEncoding), encoding);
 		}
